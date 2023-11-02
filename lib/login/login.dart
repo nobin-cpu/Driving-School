@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -24,6 +24,8 @@ class _LoginsState extends State<Logins> {
   Future withdraw() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
+    String? user = prefs.getString("type");
+    String? instIDS = prefs.getString("Instid");
 
     Map<String, String> requestHeaders = {
       'Accept': 'application/json',
@@ -49,12 +51,17 @@ class _LoginsState extends State<Logins> {
       http.Response.fromStream(result).then((response) {
         if (response.statusCode == 200) {
           var data = jsonDecode(response.body);
-          print("1234" + data['data']["auth_token"]);
-          saveprefs(data['data']["auth_token"]);
+          print("=======" + data['data']["user_data"]["type"]);
+          saveprefs(
+              data['data']["auth_token"],
+              data['data']["user_data"]["type"],
+              data['data']["user_data"]["id"].toString());
+
           // titlecontroller.clear();
           // messagecontroller.clear();
           // saveprefs(data["token"]);
           // chat.clear();
+          print("this is instid" + instIDS.toString());
           Get.to(() => SplashScreen());
           // Navigator.push(
           //     context,
@@ -64,6 +71,14 @@ class _LoginsState extends State<Logins> {
           //               isLogin: true,
           //             )));
           setState(() {});
+        }
+        if (response.statusCode == 400) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("User Credentials Didn't Match"),
+            backgroundColor: Color.fromARGB(255, 255, 0, 55),
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ));
         } else {
           // print(title);
           print(response.body.toString());
@@ -74,9 +89,11 @@ class _LoginsState extends State<Logins> {
     });
   }
 
-  saveprefs(String token) async {
+  saveprefs(String token, user, insID) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('auth_token', token);
+    prefs.setString("type", user);
+    prefs.setString("Instid", insID);
   }
 
   @override
@@ -158,7 +175,7 @@ class _LoginsState extends State<Logins> {
                           ),
                         ),
                       ),
-                      obscureText: true,
+                      obscureText: false,
                     ),
                     SizedBox(height: 16.0),
                     Padding(
@@ -183,7 +200,9 @@ class _LoginsState extends State<Logins> {
                           Text("Don't have an account?"),
                           InkWell(
                             onTap: () {
-                              Get.to(() => Signup());
+                              Get.to(() => Signup(
+                                    bookingId: "",
+                                  ));
                             },
                             child: Text(
                               "Signup",

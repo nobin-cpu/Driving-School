@@ -29,22 +29,26 @@ class _InstructorServicsState extends State<InstructorServics> {
             fit: BoxFit.fitWidth,
           ),
         ),
-        actions: [
-          Padding(
-              padding: EdgeInsets.all(10.0),
-              child: InkWell(
-                onTap: () {
-                  Get.to(() => Logins());
-                },
-                child: CircleAvatar(
-                  backgroundColor: Color(0xFF198754),
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
-                ),
-              ))
-        ],
+        // actions: [
+        //   Padding(
+        //       padding: EdgeInsets.all(10.0),
+        //       child: InkWell(
+        //         onTap: () {
+        //           widget.token != null
+        //                 ? Get.to(() => Profile(
+        //                       token: widget.token,
+        //                     ))
+        //                 : Get.to(() => Logins());
+        //         },
+        //         child: CircleAvatar(
+        //           backgroundColor: Color(0xFF198754),
+        //           child: Icon(
+        //             Icons.person,
+        //             color: Colors.white,
+        //           ),
+        //         ),
+        //       ))
+        // ],
       ),
       body: SingleChildScrollView(
         child: Column(

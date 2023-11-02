@@ -1,23 +1,36 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:s/App/appurls.dart';
-import 'package:s/book_a_lesson/book_a_lesson.dart';
+import 'package:s/courses/courses.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
+import 'package:flutter/services.dart' show precacheImage;
+
+import 'book_a_lesson/book_a_lesson.dart';
 
 class HomeComponents extends StatefulWidget {
-  const HomeComponents({Key? key}) : super(key: key);
+  final String token;
+  const HomeComponents({Key? key, required this.token}) : super(key: key);
 
   @override
   State<HomeComponents> createState() => _HomeComponentsState();
 }
 
 class _HomeComponentsState extends State<HomeComponents> {
+  Widget buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade100,
+      highlightColor: Colors.grey.shade300,
+      child: Container(
+        height: 400.0,
+        color: Colors.white,
+      ),
+    );
+  }
+
   Future homes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth-token');
@@ -43,12 +56,18 @@ class _HomeComponentsState extends State<HomeComponents> {
   @override
   void initState() {
     home1 = homes();
+
     super.initState();
   }
+
+  late ImageProvider _imageProvider;
+  bool _isLoading = true;
+  String img = "";
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Column(
       children: [
         Container(
@@ -60,9 +79,11 @@ class _HomeComponentsState extends State<HomeComponents> {
                 builder: (_, AsyncSnapshot<dynamic> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
-                      child: CircularProgressIndicator(),
+                      child: buildShimmerEffect(),
                     );
                   } else if (snapshot.hasData) {
+                    img = Appurl.baseURL +
+                        snapshot.data["contents"]["hero_section_bg"];
                     return SingleChildScrollView(
                       reverse: true,
                       physics: ScrollPhysics(),
@@ -74,12 +95,11 @@ class _HomeComponentsState extends State<HomeComponents> {
                           return Column(
                             children: [
                               Container(
-                                constraints: BoxConstraints(
+                                constraints: const BoxConstraints(
                                     maxWidth: double.infinity,
                                     maxHeight: double.infinity),
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
-                                      opacity: 22,
                                       fit: BoxFit.cover,
                                       image: NetworkImage(Appurl.baseURL +
                                           snapshot.data["contents"]
@@ -136,7 +156,7 @@ class _HomeComponentsState extends State<HomeComponents> {
                                       ),
                                       Padding(
                                         padding: EdgeInsets.only(
-                                            left: size.height * .08,
+                                            left: size.height * .024,
                                             top: size.height * .022,
                                             bottom: 20),
                                         child: ElevatedButton(
@@ -146,6 +166,7 @@ class _HomeComponentsState extends State<HomeComponents> {
                                               textStyle: TextStyle(
                                                   fontWeight: FontWeight.bold)),
                                           onPressed: () {
+                                            print("123" + img);
                                             // Get.to(() => BookALesson());
                                           },
                                           child: Text(
@@ -166,7 +187,9 @@ class _HomeComponentsState extends State<HomeComponents> {
                       ),
                     );
                   } else {
-                    return Text("No productt found");
+                    return Image.asset(
+                      "images/no-data.gif",
+                    );
                   }
                 },
               ),
@@ -191,7 +214,7 @@ class _HomeComponentsState extends State<HomeComponents> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return Center(
-                              child: CircularProgressIndicator(),
+                              child: buildShimmerEffect(),
                             );
                           } else if (snapshot.hasData) {
                             return SingleChildScrollView(
@@ -257,7 +280,7 @@ class _HomeComponentsState extends State<HomeComponents> {
                                             ),
                                             Padding(
                                               padding: EdgeInsets.only(
-                                                  left: size.height * .08,
+                                                  left: size.height * .01,
                                                   top: size.height * .022,
                                                   bottom: 20),
                                               child: ElevatedButton(
@@ -267,7 +290,11 @@ class _HomeComponentsState extends State<HomeComponents> {
                                                         fontWeight:
                                                             FontWeight.bold)),
                                                 onPressed: () {
-                                                  // Get.to(() => BookALesson());
+                                                  print("object" + img);
+                                                  Get.to(() => Courses(
+                                                        token: widget.token,
+                                                        valfordrawer: "1",
+                                                      ));
                                                 },
                                                 child: Text(
                                                   "Get Started >",
@@ -285,7 +312,9 @@ class _HomeComponentsState extends State<HomeComponents> {
                               ),
                             );
                           } else {
-                            return Text("No productt found");
+                            return Image.asset(
+                              "images/no-data.gif",
+                            );
                           }
                         },
                       ),

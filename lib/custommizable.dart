@@ -17,7 +17,7 @@ class CustomizedBottomNavigationbar extends StatefulWidget {
 
 class _CustomizedBottomNavigationbarState
     extends State<CustomizedBottomNavigationbar> {
-  int index = 0;
+  int index = 1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,16 +30,22 @@ class _CustomizedBottomNavigationbarState
   bodySection() {
     switch (index) {
       case 0:
+        return Courses(
+          token: widget.token,
+          valfordrawer: "1",
+        );
+      case 1:
         return HomePage(
           token: widget.token,
           isLogin: false,
         );
-      case 1:
-        return Courses();
       case 2:
-        return Services();
-      case 3:
-        return Faq();
+        return Services(
+          token: widget.token,
+          valfordrawer: "1",
+        );
+      // case 3:
+      //   return Faq();
     }
   }
 
@@ -48,6 +54,15 @@ class _CustomizedBottomNavigationbarState
     return BottomNavyBar(
       selectedIndex: index,
       items: [
+        BottomNavyBarItem(
+            icon: Icon(
+              Icons.drive_eta,
+              size: 30,
+            ),
+            title: Text('COURSES'),
+            inactiveColor: Colors.black,
+            activeColor: Color(0xFF198754),
+            textAlign: TextAlign.center),
         BottomNavyBarItem(
           icon: Icon(
             Icons.apps,
@@ -62,15 +77,6 @@ class _CustomizedBottomNavigationbarState
         ),
         BottomNavyBarItem(
             icon: Icon(
-              Icons.drive_eta,
-              size: 30,
-            ),
-            title: Text('COURSES'),
-            inactiveColor: Colors.black,
-            activeColor: Color(0xFF198754),
-            textAlign: TextAlign.center),
-        BottomNavyBarItem(
-            icon: Icon(
               Icons.school,
               size: 30,
             ),
@@ -78,15 +84,15 @@ class _CustomizedBottomNavigationbarState
             inactiveColor: Colors.black,
             activeColor: Color(0xFF198754),
             textAlign: TextAlign.center),
-        BottomNavyBarItem(
-            icon: Icon(
-              Icons.help,
-              size: 30,
-            ),
-            title: Text('CONTACTS'),
-            inactiveColor: Colors.black,
-            activeColor: Color(0xFF198754),
-            textAlign: TextAlign.center),
+        // BottomNavyBarItem(
+        //     icon: Icon(
+        //       Icons.help,
+        //       size: 30,
+        //     ),
+        //     title: Text('CONTACTS'),
+        //     inactiveColor: Colors.black,
+        //     activeColor: Color(0xFF198754),
+        //     textAlign: TextAlign.center),
       ],
       onItemSelected: (index) => setState(() => this.index = index),
     );

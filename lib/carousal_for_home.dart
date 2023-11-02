@@ -1,23 +1,36 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:get/get.dart';
 import 'package:s/App/appurls.dart';
 import 'package:s/book_a_lesson/book_a_lesson.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
+
+import 'courses/courses.dart';
 
 class Carous extends StatefulWidget {
-  const Carous({Key? key}) : super(key: key);
+  final String token;
+  const Carous({Key? key, required this.token}) : super(key: key);
 
   @override
   State<Carous> createState() => _CarousState();
 }
 
 class _CarousState extends State<Carous> {
+  Widget buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade100,
+      highlightColor: Colors.grey.shade300,
+      child: Container(
+        height: 400.0,
+        color: Colors.white,
+      ),
+    );
+  }
+
   Future homes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth-token');
@@ -55,7 +68,7 @@ class _CarousState extends State<Carous> {
         builder: (_, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              
+              child: buildShimmerEffect(),
             );
           } else if (snapshot.hasData) {
             return SingleChildScrollView(
@@ -126,7 +139,10 @@ class _CarousState extends State<Carous> {
                               ),
                               child: TextButton(
                                 onPressed: () {
-                                  Get.to(() => BookALesson());
+                                  Get.to(() => Courses(
+                                        token: widget.token,
+                                        valfordrawer: "1",
+                                      ));
                                 },
                                 child: Text(
                                   "BOOK A LESSON >>",
@@ -202,7 +218,10 @@ class _CarousState extends State<Carous> {
                               ),
                               child: TextButton(
                                 onPressed: () {
-                                  Get.to(() => BookALesson());
+                                  Get.to(() => Courses(
+                                        token: widget.token,
+                                        valfordrawer: "1",
+                                      ));
                                 },
                                 child: Text(
                                   "GET STARTED  >>",
@@ -281,7 +300,10 @@ class _CarousState extends State<Carous> {
                               ),
                               child: TextButton(
                                 onPressed: () {
-                                  Get.to(() => BookALesson());
+                                  Get.to(() => Courses(
+                                        token: widget.token,
+                                        valfordrawer: "1",
+                                      ));
                                 },
                                 child: Text(
                                   "FIND OUT MORE >>",
@@ -378,7 +400,9 @@ class _CarousState extends State<Carous> {
               ),
             );
           } else {
-            return Text("No productt found");
+            return  Image.asset(
+                  "images/no-data.gif",
+                );
           }
         },
       ),

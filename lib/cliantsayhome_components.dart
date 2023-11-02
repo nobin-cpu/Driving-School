@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:shimmer/shimmer.dart';
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -39,6 +39,17 @@ class _CliantSaysState extends State<CliantSays> {
     }
   }
 
+  Widget buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade100,
+      highlightColor: Colors.grey.shade300,
+      child: Container(
+        height: 400.0,
+        color: Colors.white,
+      ),
+    );
+  }
+
   Future? home1;
   @override
   void initState() {
@@ -58,7 +69,7 @@ class _CliantSaysState extends State<CliantSays> {
             builder: (_, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
-                  
+                  child: buildShimmerEffect(),
                 );
               } else if (snapshot.hasData) {
                 return CarouselSlider.builder(
@@ -96,7 +107,8 @@ class _CliantSaysState extends State<CliantSays> {
                                     top: size.height * .022,
                                     right: 10),
                                 child: Text(
-                                  snapshot.data["testimonials"][index]["speech"],
+                                  snapshot.data["testimonials"][index]
+                                      ["speech"],
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 7,
                                   softWrap: true,
@@ -115,7 +127,8 @@ class _CliantSaysState extends State<CliantSays> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      snapshot.data["testimonials"][index]["name"],
+                                      snapshot.data["testimonials"][index]
+                                          ["name"],
                                       style: TextStyle(
                                           fontSize: 18, color: Colors.white),
                                     ),

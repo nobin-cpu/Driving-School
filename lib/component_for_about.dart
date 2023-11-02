@@ -1,12 +1,17 @@
 import 'dart:convert';
-
+import 'package:get/get.dart';
+import 'package:s/services/instructor.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:s/App/appurls.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import 'services/services.dart';
+
 class About extends StatefulWidget {
-  const About({Key? key}) : super(key: key);
+  final String token;
+  const About({Key? key, required this.token}) : super(key: key);
 
   @override
   State<About> createState() => _AboutState();
@@ -34,6 +39,17 @@ class _AboutState extends State<About> {
     }
   }
 
+  Widget buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade100,
+      highlightColor: Colors.grey.shade300,
+      child: Container(
+        height: 400.0,
+        color: Colors.white,
+      ),
+    );
+  }
+
   Future? home1;
   @override
   void initState() {
@@ -51,7 +67,7 @@ class _AboutState extends State<About> {
           builder: (_, AsyncSnapshot<dynamic> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
-                
+                child: buildShimmerEffect(),
               );
             } else if (snapshot.hasData) {
               return SingleChildScrollView(
@@ -129,7 +145,12 @@ class _AboutState extends State<About> {
                                     width: size.width * .35,
                                     child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          Get.to(() => Services(
+                                            token: widget.token,
+                                                valfordrawer: "0",
+                                              ));
+                                        },
                                         child: Text("Find Instructor")),
                                   ),
                                 ),
@@ -141,7 +162,9 @@ class _AboutState extends State<About> {
                     ),
                   ));
             } else {
-              return Text("No productt found");
+              return  Image.asset(
+                  "images/no-data.gif",
+                );
             }
           },
         ),

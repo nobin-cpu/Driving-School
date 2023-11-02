@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -10,9 +10,11 @@ import 'package:s/courses/coursedetails.dart';
 import 'package:show_up_animation/show_up_animation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
 
 class ContforCourses extends StatefulWidget {
-  const ContforCourses({Key? key}) : super(key: key);
+  final String token;
+  const ContforCourses({Key? key, required this.token}) : super(key: key);
 
   @override
   State<ContforCourses> createState() => _ContforCoursesState();
@@ -31,6 +33,7 @@ class _ContforCoursesState extends State<ContforCourses> {
     var response =
         await http.get(Uri.parse(Appurl.courses), headers: requestHeaders);
     if (response.statusCode == 200) {
+      print("get it==============");
       print('Get post collected' + response.body);
       var userData1 = jsonDecode(response.body)["data"];
 
@@ -38,6 +41,17 @@ class _ContforCoursesState extends State<ContforCourses> {
     } else {
       print("post have no Data${response.body}");
     }
+  }
+
+  Widget buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade100,
+      highlightColor: Colors.grey.shade300,
+      child: Container(
+        height: 400.0,
+        color: Colors.white,
+      ),
+    );
   }
 
   Future? home1;
@@ -67,7 +81,7 @@ class _ContforCoursesState extends State<ContforCourses> {
               builder: (_, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
-                    child: CircularProgressIndicator(),
+                    child: buildShimmerEffect(),
                   );
                 } else if (snapshot.hasData) {
                   return ListView.builder(
@@ -164,7 +178,6 @@ class _ContforCoursesState extends State<ContforCourses> {
                                       )
                                     ]),
                                     Container(
-                                      height: size.height * .3,
                                       width: double.infinity,
                                       color: Color.fromARGB(18, 76, 175, 79),
                                       child: Column(
@@ -176,31 +189,62 @@ class _ContforCoursesState extends State<ContforCourses> {
                                                 left: 20, top: 10),
                                             child: Text(
                                               "Block of " +
-                                                          snapshot.data[
-                                                                      "courses"]
-                                                                  [index][
-                                                              "course_hours"] !=
+                                                          snapshot
+                                                              .data["courses"]
+                                                                  [index]
+                                                                  ["headline"]
+                                                              .toString() !=
                                                       null
                                                   ? snapshot.data["courses"]
-                                                      [index]["course_hours"]
+                                                          [index]["headline"]
+                                                      .toString()
                                                   : "N/A",
-                                              style: TextStyle(fontSize: 20),
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           Padding(
                                             padding: EdgeInsets.only(
                                                 left: 20, top: 10),
-                                            child: Text(
-                                              snapshot.data["courses"][index][
-                                                          "long_description"] !=
-                                                      null
-                                                  ? snapshot.data["courses"]
-                                                          [index]
-                                                      ["long_description"]
-                                                  : "N/A",
-                                              maxLines: 3,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(fontSize: 16),
+                                            child: Row(
+                                              children: [
+                                                Text("Total : ",
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                Text(
+                                                  "${snapshot.data["courses"][index]["course_hours"]}" !=
+                                                          null
+                                                      ? "${snapshot.data["courses"][index]["course_hours"]}  Hours"
+                                                      : "N/A",
+                                                  style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 20, top: 10),
+                                            child: SingleChildScrollView(
+                                              child: Html(
+                                                shrinkWrap: true,
+                                                data: snapshot.data["courses"]
+                                                                [index][
+                                                            "long_description"] !=
+                                                        null
+                                                    ? snapshot.data["courses"]
+                                                            [index]
+                                                        ["long_description"]
+                                                    : "N/A",
+                                                // maxLines: 3,
+                                                // overflow: TextOverflow.ellipsis,
+                                                // style: TextStyle(fontSize: 16),
+                                              ),
                                             ),
                                           ),
                                           SizedBox(
@@ -292,6 +336,44 @@ class _ContforCoursesState extends State<ContforCourses> {
                                                 ),
                                                 onPressed: () {
                                                   Get.to(() => CourseDetails(
+                                                        price: snapshot
+                                                                .data["courses"]
+                                                                    [index]
+                                                                    ["price"]
+                                                                .toString() ??
+                                                            "",
+                                                        totaltime: snapshot
+                                                                .data["courses"]
+                                                                    [index][
+                                                                    "course_hours"]
+                                                                .toString() ??
+                                                            "",
+                                                        timelimit: double.parse(snapshot
+                                                                    .data[
+                                                                        "courses"]
+                                                                        [index][
+                                                                        "course_hours"]
+                                                                    .toString()) !=
+                                                                null
+                                                            ? double.parse(snapshot
+                                                                .data["courses"]
+                                                                    [index][
+                                                                    "course_hours"]
+                                                                .toString())
+                                                            : 0.0,
+                                                        token: widget.token,
+                                                        id: snapshot.data[
+                                                                        "courses"]
+                                                                        [index][
+                                                                        "course_id"]
+                                                                    .toString() !=
+                                                                null
+                                                            ? snapshot
+                                                                .data["courses"]
+                                                                    [index][
+                                                                    "course_id"]
+                                                                .toString()
+                                                            : "N/A",
                                                         desc: snapshot.data["courses"]
                                                                         [index][
                                                                     "long_description"] !=
@@ -335,7 +417,9 @@ class _ContforCoursesState extends State<ContforCourses> {
                     },
                   );
                 } else {
-                  return Text("No productt found");
+                  return Image.asset(
+                    "images/no-data.gif",
+                  );
                 }
               },
             ),

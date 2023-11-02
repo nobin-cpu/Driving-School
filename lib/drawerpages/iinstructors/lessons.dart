@@ -10,8 +10,11 @@ import 'package:s/login/login.dart';
 import 'package:geocode/geocode.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../profile.dart';
+
 class Lessonfromdrawer extends StatefulWidget {
-  const Lessonfromdrawer({Key? key}) : super(key: key);
+  
+  const Lessonfromdrawer({Key? key,}) : super(key: key);
 
   @override
   State<Lessonfromdrawer> createState() => _LessonfromdrawerState();
@@ -25,6 +28,8 @@ class _LessonfromdrawerState extends State<Lessonfromdrawer> {
   bool? standard = false;
   bool? intensive = false;
   bool? block = false;
+  String latit = "";
+  String long = "";
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -37,7 +42,8 @@ class _LessonfromdrawerState extends State<Lessonfromdrawer> {
       if (locations.isNotEmpty) {
         double latitude = locations[0].latitude;
         double longitude = locations[0].longitude;
-
+        latit = latitude.toString();
+        long = longitude.toString();
         print('Latitude: $latitude');
         print('Longitude: $longitude');
       } else {
@@ -64,22 +70,27 @@ class _LessonfromdrawerState extends State<Lessonfromdrawer> {
             fit: BoxFit.fitWidth,
           ),
         ),
-        actions: [
-          Padding(
-              padding: EdgeInsets.all(10.0),
-              child: InkWell(
-                onTap: () {
-                  Get.to(() => Logins());
-                },
-                child: CircleAvatar(
-                  backgroundColor: Color(0xFF198754),
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                  ),
-                ),
-              ))
-        ],
+        // actions: [
+        //   Padding(
+        //       padding: EdgeInsets.all(10.0),
+        //       child: InkWell(
+        //         onTap: () {
+        //           widget.token != null
+        //               ? Get.to(() => Profile(
+        //                     token: widget.token,
+        //                   ))
+        //               : Get.to(() => Logins());
+        //         },
+        //         child: CircleAvatar(
+        //           backgroundColor: Color(0xFF198754),
+        //           child: Icon(
+        //             Icons.person,
+        //             color: Colors.white,
+        //           ),
+        //         ),
+        //       ))
+        // ],
+    
       ),
       body: SingleChildScrollView(
         physics: NeverScrollableScrollPhysics(),
@@ -419,7 +430,11 @@ class _LessonfromdrawerState extends State<Lessonfromdrawer> {
                                     child: ElevatedButton(
                                       onPressed: () {
                                         _performSearch();
-                                        Get.to(() => ChooseInstructor());
+                                        // Get.to(() => ChooseInstructor(
+
+                                        //       lat: latit,
+                                        //       long: long,
+                                        //     ));
                                       },
                                       child: Text('Next'),
                                     ),
